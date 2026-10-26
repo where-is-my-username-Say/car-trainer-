@@ -3,79 +3,120 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>AI Racer Lab 3D</title>
 <style>
-:root{--bg:#070b14;--pn:#0f1626;--bd:#1f2b47;--tx:#e8eefc;--mu:#8190b3;--ac:#35e0ff;--ac2:#8b5cff;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef2fb;--pn:#fff;--bd:#d5ddf0;--tx:#10182b;--mu:#5a6684;color-scheme:light}}
-html{height:100%}
-body{margin:0;height:100%;background:var(--bg);color:var(--tx);font:14px/1.4 system-ui,-apple-system,sans-serif;display:flex;flex-direction:column}
-#bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:var(--pn);border-bottom:1px solid var(--bd);align-items:center}
-button,select{background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:7px 11px;font:inherit;white-space:nowrap;cursor:pointer}
-button:active{transform:scale(.96)}
-button.p{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#05101c;border:0;font-weight:700}
-button.on{border-color:var(--ac);color:var(--ac)}
-label{display:flex;align-items:center;gap:5px;color:var(--mu);white-space:nowrap}
-input[type=range]{width:90px;accent-color:var(--ac)}
-#main{flex:1;display:flex;min-height:0}
+:root{--bg:#060a13;--pn:#0d1424;--pn2:#131c33;--bd:#1d2a47;--tx:#e8eefc;--mu:#7f8fb2;--ac:#35e0ff;--ac2:#8b5cff;--ok:#3dffa0;--bad:#ff4d6d;--hd:52px;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eaeff9;--pn:#fff;--pn2:#f1f4fb;--bd:#d3dcf0;--tx:#10182b;--mu:#5a6684;color-scheme:light}}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:13px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button,select{background:var(--pn2);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:7px 12px;font:inherit;white-space:nowrap;cursor:pointer}
+button:active{transform:scale(.96)}button.p{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#05101c;border:0;font-weight:700}
+button.on{border-color:var(--ac);color:var(--ac)}button.bad{color:var(--bad);border-color:rgba(255,77,109,.4)}
+select{min-width:0}input[type=range]{accent-color:var(--ac);width:100%}
+#top{height:var(--hd);flex:none;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--pn);border-bottom:1px solid var(--bd)}
+.brand{display:flex;align-items:center;gap:8px;white-space:nowrap;font-weight:700}.brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--ac),var(--ac2))}.brand small{color:var(--ac)}
+#topk{display:flex;gap:6px;overflow:hidden}.tk{background:var(--pn2);border:1px solid var(--bd);border-radius:20px;padding:3px 11px;white-space:nowrap;color:var(--mu)}.tk b{color:var(--tx);margin-left:6px}
+.sp{flex:1}
+#main{flex:1;display:flex;min-height:0;position:relative}
+.panel{width:290px;flex:none;overflow:auto;background:var(--pn);padding:12px;box-sizing:border-box}
+#setup{border-right:1px solid var(--bd)}#info{width:340px;border-left:1px solid var(--bd)}.panel.shut{display:none}
+.panel h4{margin:16px 0 8px;color:var(--mu);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.panel h4:first-child{margin-top:0}
+.f{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--mu)}.f select{width:150px}
+.f.v{display:block}.f.v>span{display:flex;justify-content:space-between;margin-bottom:3px}.f.v b{color:var(--tx)}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.row button{flex:1}
+.chip{display:inline-flex;align-items:center;cursor:pointer;border:1px solid var(--bd);border-radius:20px;padding:5px 11px;color:var(--mu);background:var(--pn2)}.chip input{display:none}.chip:has(input:checked){border-color:var(--ac);color:var(--ac);background:rgba(53,224,255,.1)}
+.hint{color:var(--mu);font-size:12px;background:var(--pn2);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;margin-bottom:8px}
 #stage{flex:1;position:relative;min-width:0;min-height:0;overflow:hidden}
 #c{display:block;width:100%;height:100%;touch-action:none}
-#msg{position:absolute;left:12px;bottom:10px;background:rgba(7,11,20,.82);color:#e8eefc;padding:5px 11px;border-radius:20px;font-size:13px;max-width:85%}
-#tel{position:absolute;left:12px;top:10px;background:rgba(7,11,20,.7);color:#e8eefc;padding:5px 10px;border-radius:10px;font:12px/1.5 ui-monospace,monospace;white-space:pre}
-#side{width:320px;overflow:auto;padding:10px;background:var(--pn);border-left:1px solid var(--bd)}
-#side canvas{width:100%;height:auto;border-radius:10px;margin-bottom:8px}
-.g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
-.s{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:5px 8px}
-.s b{display:block;font-size:17px;color:var(--ac)}.s span{color:var(--mu);font-size:11px}
-h4{margin:6px 0 4px;color:var(--mu);font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
-.r{display:flex;gap:6px;margin-bottom:6px}.r select{flex:1;min-width:0}
-#res,#svd{color:var(--mu);font-size:12px;margin-bottom:6px}
-@media(max-width:820px){#bar{flex-wrap:nowrap;overflow-x:auto}#main{flex-direction:column}#side{width:auto;max-height:42%;border-left:0;border-top:1px solid var(--bd)}}
+#clock{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(7,11,20,.75);color:#e8eefc;padding:5px 14px;border-radius:20px;font:600 13px ui-monospace,monospace;white-space:nowrap}
+#hud{position:absolute;left:10px;top:10px;width:178px;background:rgba(7,11,20,.72);color:#e8eefc;border-radius:14px;padding:10px 12px;backdrop-filter:blur(6px)}
+#hud .big{display:flex;align-items:baseline;gap:6px}#hv{font-size:34px;line-height:1}#hud span{color:#9fb0d6;font-size:11px}#hud em{margin-left:auto;font-style:normal;color:#35e0ff;font-weight:700}
+.bars{display:grid;gap:5px;margin:8px 0}.bars label{display:grid;grid-template-columns:42px 1fr;align-items:center;gap:6px;font-size:10px;color:#9fb0d6}
+.bars u{display:block;height:5px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}.bars i{display:block;height:100%;width:0}
+#hx{font:11px/1.5 ui-monospace,monospace;white-space:pre;color:#c7d3f0}
+#msg{position:absolute;left:50%;transform:translateX(-50%);bottom:76px;background:rgba(7,11,20,.82);color:#e8eefc;padding:6px 14px;border-radius:20px;font-size:13px;max-width:min(90%,620px);text-align:center}
+#dock{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;display:flex;align-items:center;gap:8px;padding:8px;background:rgba(13,20,36,.88);border:1px solid var(--bd);border-radius:18px;backdrop-filter:blur(8px);max-width:calc(100% - 16px);overflow-x:auto;color:#e8eefc}
+#dock button{background:rgba(255,255,255,.07);color:#e8eefc;border-color:rgba(255,255,255,.12)}#dock button.p{color:#05101c;background:linear-gradient(135deg,var(--ac),var(--ac2));border:0}
+#dock button.on{color:var(--ac);border-color:var(--ac)}
+#seg{display:flex;gap:3px;background:rgba(255,255,255,.06);border-radius:12px;padding:3px}#seg button{border:0;padding:6px 10px;border-radius:9px;background:transparent}
+.dv{width:1px;align-self:stretch;background:rgba(255,255,255,.14)}
+.g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.s{background:var(--pn2);border:1px solid var(--bd);border-radius:12px;padding:7px 9px}.s b{display:block;font-size:18px;color:var(--ac)}.s span{color:var(--mu);font-size:11px}
+.s.w b{color:var(--ok)}.s.d b{color:var(--ac2)}
+#lb{display:grid;gap:4px}.lr{display:grid;grid-template-columns:18px 12px 1fr auto;gap:8px;align-items:center;background:var(--pn2);border:1px solid var(--bd);border-radius:10px;padding:6px 9px}
+.lr i{width:10px;height:10px;border-radius:50%}.lr em{font-style:normal;color:var(--mu);font-size:12px}.lr b{color:var(--mu)}
+.panel canvas{width:100%;height:auto;border-radius:12px;display:block}
+#res,#svd{color:var(--mu);font-size:12px;margin-top:6px}
+@media(max-width:900px){#topk .tk:nth-child(n+3){display:none}.panel{position:absolute;z-index:5;top:0;bottom:0;width:min(92vw,360px);box-shadow:0 0 30px rgba(0,0,0,.5)}#setup{left:0}#info{right:0}#hud{width:140px;padding:8px}#hv{font-size:26px}#hx{display:none}#msg{bottom:72px;font-size:12px}}
+button,.chip,#seg button{transition:transform .12s,background .2s,border-color .2s,color .2s}button:hover{border-color:var(--ac)}
+.panel.in{animation:inL .32s cubic-bezier(.2,.8,.2,1) both}#info.in{animation-name:inR}.panel.out{animation:outL .2s ease-in both}#info.out{animation-name:outR}
+.panel.in>*{animation:rise .4s cubic-bezier(.2,.8,.2,1) both}.panel.in>*:nth-child(n+4){animation-delay:.05s}.panel.in>*:nth-child(n+9){animation-delay:.1s}.panel.in>*:nth-child(n+14){animation-delay:.15s}
+@keyframes inL{from{opacity:0;transform:translateX(-28px)}}@keyframes inR{from{opacity:0;transform:translateX(28px)}}
+@keyframes outL{to{opacity:0;transform:translateX(-28px)}}@keyframes outR{to{opacity:0;transform:translateX(28px)}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+#msg.pop{animation:pop .35s cubic-bezier(.2,.8,.2,1)}@keyframes pop{from{opacity:0;transform:translate(-50%,10px) scale(.96)}}
+#dock{animation:dockin .7s cubic-bezier(.2,.8,.2,1) .15s both}@keyframes dockin{from{opacity:0;transform:translate(-50%,40px)}}
+#hud,#clock{animation:fade .8s ease .3s both}@keyframes fade{from{opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
-<div id="bar">
-<button class="p" id="go">▶ Start</button>
-<button id="spd">Speed 1×</button>
-<label>Cars <input type="range" id="np" min="5" max="500" value="60"><b id="npv">60</b></label>
-<button id="add">+25 cars</button>
-<button id="dr">✏ Draw track</button>
-<button id="df">Default track</button>
-<label>Road <input type="range" id="rw" min="44" max="110" value="66"></label>
-<button id="ts">Test best</button>
-<label><input type="checkbox" id="ry" checked>Sensors</label>
-<select id="cm" title="Camera"><option value="ov">Cam: Overview</option><option value="bird">Cam: Bird's-eye</option><option value="chase">Cam: Chase</option><option value="best">Cam: Follow best</option><option value="free">Cam: Free</option><option value="cock">Cam: Cockpit</option></select>
-<button id="nx" title="Choose which car Chase / Cockpit follow">Car: Leader</button>
-<select id="ql" title="Graphics"><option value="a">Gfx: Auto</option><option value="0">Gfx: Low</option><option value="1">Gfx: Medium</option><option value="2">Gfx: High</option></select>
-<select id="tm" title="Time of day"><option value="day">Day</option><option value="sun">Sunset</option><option value="night">Night</option></select>
-<select id="vh" title="Vehicle"><option value="0">Model: Sports RWD</option><option value="1">Model: Hatch FWD</option><option value="2">Model: Rally AWD</option></select>
-<select id="sf" title="Road surface"><option value="0">Road: Asphalt</option><option value="1">Road: Dirt</option><option value="2">Road: Gravel</option><option value="3">Road: Sand</option><option value="4">Road: Mud</option><option value="5">Road: Mixed</option></select>
-<select id="hl" title="Terrain"><option value="0">Terrain: Flat</option><option value="1">Terrain: Hills</option></select>
-<select id="pq" title="Physics sub-steps per 60 Hz tick"><option value="1">Physics: Fast</option><option value="2" selected>Physics: Normal</option><option value="4">Physics: Precise</option></select>
-<label><input type="checkbox" id="rn">Rain</label><label><input type="checkbox" id="cc">Car hits</label><label><input type="checkbox" id="ob">Obstacles</label><label><input type="checkbox" id="rp">Fixed seed</label>
-<button id="rs">Reset (zero)</button>
-</div>
+<header id="top"><div class="brand"><i></i>AI Racer Lab <small>3D</small></div>
+<div id="topk"><span class="tk">Gen<b id="tg">0</b></span><span class="tk">Alive<b id="ta">0</b></span><span class="tk">Best lap<b id="tb">—</b></span><span class="tk">Record<b id="tr">—</b></span></div>
+<div class="sp"></div><button id="bs" class="on">⚙ Setup</button><button id="bi" class="on">📊 Stats</button></header>
 <div id="main">
-<div id="stage"><canvas id="c"></canvas><div id="tel"></div><div id="msg">Press Start: every car begins with a random brain.</div></div>
-<div id="side">
-<div class="g">
-<div class="s"><b id="sg">0</b><span>Generation</span></div><div class="s"><b id="sa">0</b><span>Alive</span></div><div class="s"><b id="sm">0%</b><span>Mutation</span></div>
-<div class="s"><b id="sb">0</b><span>Best now</span></div><div class="s"><b id="sv">0</b><span>Average now</span></div><div class="s"><b id="sr">0</b><span>Record</span></div>
-<div class="s"><b id="sl">0.0</b><span>Best laps</span></div><div class="s"><b id="sf">0%</b><span>Finished lap</span></div><div class="s"><b id="sn">0</b><span>Cars</span></div>
-</div>
-<h4>Live brain: 8 sensors → 48 → 43 → 38 → 2</h4><canvas id="nn" width="360" height="400"></canvas>
-<h4>Growth: best (blue) and average (purple)</h4><canvas id="ch" width="360" height="110"></canvas>
+<aside class="panel" id="setup">
+<h4>Track</h4>
+<div class="row"><button id="dr">✏ Draw track</button><button id="df">Default track</button></div>
+<label class="f v"><span>Road width <b id="rwv">66</b></span><input type="range" id="rw" min="44" max="110" value="66"></label>
+<h4>Field</h4>
+<label class="f v"><span>Cars <b id="npv">60</b></span><input type="range" id="np" min="5" max="500" value="60"></label>
+<div class="row"><button id="add">+25 cars</button></div>
+<h4>Car &amp; surface</h4>
+<label class="f">Model<select id="vh"><option value="0">Sports RWD</option><option value="1">Hatch FWD</option><option value="2">Rally AWD</option></select></label>
+<label class="f">Surface<select id="sf"><option value="0">Asphalt</option><option value="1">Dirt</option><option value="2">Gravel</option><option value="3">Sand</option><option value="4">Mud</option><option value="5">Mixed</option></select></label>
+<label class="f">Terrain<select id="hl"><option value="0">Flat</option><option value="1">Hills</option></select></label>
+<h4>Conditions</h4>
+<label class="f">Time<select id="tm"><option value="day">Day</option><option value="sun">Sunset</option><option value="night">Night</option></select></label>
+<div class="row"><label class="chip"><input type="checkbox" id="rn">Rain</label><label class="chip"><input type="checkbox" id="ob">Obstacles</label><label class="chip"><input type="checkbox" id="cc">Car hits</label></div>
+<h4>AI goal</h4>
+<div class="hint">🏁 Win = fastest lap. A generation ends 4 s after the first car finishes; quicker laps score higher. Cars have a drift brake (handbrake) output and see the corner ahead, so they can learn to slide through fast sharp turns.</div>
+<div class="row"><label class="chip"><input type="checkbox" id="dfr" checked>Reward drifting</label><label class="chip"><input type="checkbox" id="rp">Fixed seed</label></div>
+<h4>Display</h4>
+<label class="f">Graphics<select id="ql"><option value="a">Auto</option><option value="0">Low</option><option value="1">Medium</option><option value="2">High</option></select></label>
+<label class="f">Physics<select id="pq"><option value="1">Fast</option><option value="2" selected>Normal</option><option value="4">Precise</option></select></label>
+<div class="row"><label class="chip"><input type="checkbox" id="ry" checked>Sensors</label></div>
+<h4>Danger zone</h4><div class="row"><button id="rs" class="bad">Reset (zero)</button></div>
+</aside>
+<div id="stage"><canvas id="c"></canvas><div id="clock">Gen 0</div>
+<div id="hud"><div class="big"><b id="hv">0</b><span>km/h</span><em id="hg">G1</em></div>
+<div class="bars"><label>THR<u><i id="bt" style="background:#3dffa0"></i></u></label><label>BRAKE<u><i id="bb" style="background:#ff4d6d"></i></u></label><label>DRIFT<u><i id="bd" style="background:#8b5cff"></i></u></label></div><div id="hx"></div></div>
+<div id="msg">Press Start: every car begins with a random brain.</div>
+<div id="dock"><button class="p" id="go">▶ Start</button><button id="spd">Speed 1×</button><div class="dv"></div>
+<div id="seg"><button data-v="ov">Overview</button><button data-v="bird">Bird</button><button data-v="chase">Chase</button><button data-v="best">Leader</button><button data-v="free">Free</button><button data-v="cock">Cockpit</button></div>
+<select id="cm" style="display:none"><option value="ov">ov</option><option value="bird">bird</option><option value="chase">chase</option><option value="best">best</option><option value="free">free</option><option value="cock">cock</option></select>
+<button id="nx" title="Choose which car Chase / Cockpit follow">Car: Leader</button><div class="dv"></div><button id="ts">🏁 Test best</button></div></div>
+<aside class="panel" id="info">
+<h4>Race stats</h4>
+<div class="g"><div class="s"><b id="sg">0</b><span>Generation</span></div><div class="s"><b id="sa">0</b><span>Alive</span></div><div class="s"><b id="sm">0%</b><span>Mutation</span></div>
+<div class="s w"><b id="sbl">—</b><span>Best lap now</span></div><div class="s w"><b id="srl">—</b><span>Record lap</span></div><div class="s"><b id="sfin">0%</b><span>Finished</span></div>
+<div class="s"><b id="sprog">0%</b><span>Best progress</span></div><div class="s"><b id="savg">0%</b><span>Avg progress</span></div><div class="s d"><b id="sdr">0</b><span>Drifting now</span></div></div>
+<h4>Leaderboard</h4><div id="lb"></div>
+<h4>Progress: best (blue) · average (purple)</h4><canvas id="ch" width="360" height="110"></canvas>
+<h4>Fastest lap per generation</h4><canvas id="ct" width="360" height="110"></canvas>
+<h4>Live brain: 12 inputs → 48 → 43 → 38 → 3</h4><canvas id="nn" width="360" height="400"></canvas>
 <h4>Compare generations</h4>
-<div class="r"><select id="gs"></select><button id="cmp">Race vs now</button></div>
-<div id="res">Pick an old generation. Its best car races the newest one.</div>
-<div id="svd">Autosave: on</div>
-</div></div>
+<div class="row"><select id="gs" style="flex:1"></select><button id="cmp" style="flex:none">Race vs now</button></div>
+<div id="res">Pick an old generation. Its best car races the newest one.</div><div id="svd">Autosave: on</div>
+</aside></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 const W=1200,H=700,$=id=>document.getElementById(id);
-const QZ=Math.max(2,Math.ceil(devicePixelRatio||1));$('nn').width=360*QZ;$('nn').height=400*QZ;$('ch').width=360*QZ;$('ch').height=110*QZ;
-const nn=$('nn').getContext('2d'),ch=$('ch').getContext('2d');nn.setTransform(QZ,0,0,QZ,0,0);ch.setTransform(QZ,0,0,QZ,0,0);
+const QZ=Math.max(2,Math.ceil(devicePixelRatio||1));$('nn').width=360*QZ;$('nn').height=400*QZ;$('ch').width=360*QZ;$('ch').height=110*QZ;$('ct').width=360*QZ;$('ct').height=110*QZ;
+const nn=$('nn').getContext('2d'),ch=$('ch').getContext('2d');nn.setTransform(QZ,0,0,QZ,0,0);ch.setTransform(QZ,0,0,QZ,0,0);const lap2=$('ct').getContext('2d');lap2.setTransform(QZ,0,0,QZ,0,0);
 const mk=document.createElement('canvas');mk.width=W;mk.height=H;const mx=mk.getContext('2d',{willReadFrequently:true});
-const SZ0=[8,48,43,38,2],SZ=[11,48,43,38,2],BASE=[0],NEUR=[],WS=[];let NW=0;
+const SZ0=[8,48,43,38,2],SZ1=[11,48,43,38,2],SZ=[12,48,43,38,3],BASE=[0],NEUR=[],WS=[];let NW=0;
 for(let l=1;l<5;l++){BASE[l]=NW;for(let j=0;j<SZ[l];j++){NEUR.push([NW,SZ[l-1]+1]);for(let i=0;i<=SZ[l-1];i++)WS.push(1/Math.sqrt(SZ[l-1]));NW+=SZ[l-1]+1}}
-let NW0=0;for(let l=1;l<5;l++)NW0+=SZ0[l]*(SZ0[l-1]+1);
-// old 8-input brains -> 11 inputs: new input weights start at 0, so the old network is reproduced exactly
-function mig(w){if(!w||w.length!=NW0)return w;const o=new Float32Array(NW);let p=0,q=0;for(let l=1;l<5;l++){const m0=SZ0[l-1],m=SZ[l-1];for(let j=0;j<SZ[l];j++){for(let i=0;i<=m0;i++)o[q++]=w[p++];for(let i=m0;i<m;i++)o[q++]=0}}return o}
+const nwOf=S=>{let n=0;for(let l=1;l<5;l++)n+=S[l]*(S[l-1]+1);return n},NW0=nwOf(SZ0),NW1=nwOf(SZ1);
+// grow a brain: new inputs / new output neurons start at 0 weights, so the old behaviour is reproduced exactly
+function conv(w,A,B){const o=new Float32Array(nwOf(B));let p=0,q=0;for(let l=1;l<5;l++)for(let j=0;j<B[l];j++){if(j<A[l]){for(let i=0;i<=A[l-1];i++)o[q++]=w[p++];q+=B[l-1]-A[l-1]}else q+=B[l-1]+1}return o}
+function mig(w){if(!w)return w;if(w.length==NW0)w=conv(w,SZ0,SZ1);if(w.length==NW1)w=conv(w,SZ1,SZ);return w}
 // ---- vehicle / surface constants (SI units inside the physics; 1 world unit = 0.32 m) ----
 const UM=.32,MU=1/UM,G=9.81,RW=.31,H0=.5,KS=30000,CS=2800,HC=.5,IY=1800,IX=450,FD=3.9,GR=[3.6,2.4,1.75,1.35,1.08,.88],XW=[1.25,1.25,-1.45,-1.45],YW=[.78,-.78,.78,-.78];
 const SPECS=[{n:'Sports RWD',m:1250,T:380,dr:2,mu:1.15,lo:1,cd:.65,cl:.5,iz:1700,br:1.05},{n:'Hatch FWD',m:1050,T:230,dr:0,mu:1.05,lo:1,cd:.62,cl:.15,iz:1300,br:1},{n:'Rally AWD',m:1350,T:360,dr:1,mu:1.05,lo:1.2,cd:.7,cl:.3,iz:1800,br:1}];
@@ -83,9 +124,9 @@ const SPECS=[{n:'Sports RWD',m:1250,T:380,dr:2,mu:1.15,lo:1,cd:.65,cl:.5,iz:1700
 const SU0=[[1,1,.012],[.72,1.35,.03],[.6,1.5,.05],[.45,1.6,.1],[.35,1.7,.09],[1,1,.02],[.5,1.4,.05]],SN=['asphalt','dirt','gravel','sand','mud','kerb','grass'],WETK=[.62,.8,.9,.9,1,.8,.7],SC=[[.19,.19,.21],[.45,.33,.2],[.5,.48,.44],[.78,.68,.4],[.25,.18,.12]];
 function mutate(w,p,k){for(let i=0;i<NW;i++)if(Math.random()<p)w[i]+=(Math.random()+Math.random()+Math.random()-1.5)*k*WS[i]}
 let HT=[],GS=[],BK=[],RT=[],OB=[],SP=null,SV=null,PQ=2,mask=new Uint8Array(W*H),C=[],N=0,NM=[],roadW=66,pop=[],popN=60,gen=0,gAge=0,rec=0,bestW=null,histB=[],histA=[],samples=[],stag=0,mr=.03;
-let run=false,speed=1,spdI=0,dm=false,raw=[],drawing=false,test=false,saved=null,focus=null,sel=null,fr=0,showRays=true,lastSave=0;
+let winner=null,winT=0,recT=0,histL=[],DR=true,GYv=-.3;let run=false,speed=1,spdI=0,dm=false,raw=[],drawing=false,test=false,saved=null,focus=null,sel=null,fr=0,showRays=true,lastSave=0;
 const ANG=[-90,-60,-30,-10,10,30,60,90].map(d=>d*Math.PI/180),CA=ANG.map(Math.cos),SA=ANG.map(Math.sin),RL=200,RS=6;
-const msg=t=>$('msg').textContent=t,rnd=()=>Math.random()*2-1,rw=()=>Float32Array.from({length:NW},(_,i)=>rnd()*1.73*WS[i]);
+const msg=t=>{const m=$('msg');m.textContent=t;m.classList.remove('pop');void m.offsetWidth;m.classList.add('pop')},rnd=()=>Math.random()*2-1,rw=()=>{const w=Float32Array.from({length:NW},(_,i)=>rnd()*1.73*WS[i]);w[NW-SZ[3]-1]=-1;return w};
 // ---------- 3D setup ----------
 let R;try{R=new THREE.WebGLRenderer({canvas:$('c'),antialias:true,powerPreference:'high-performance'})}catch(e){msg('WebGL is not available in this browser.');throw e}
 R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
@@ -98,16 +139,28 @@ const sky=new THREE.Mesh(new THREE.SphereGeometry(5000,24,12),new THREE.ShaderMa
  vertexShader:'varying vec3 p;void main(){p=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
  fragmentShader:'uniform vec3 t,b;varying vec3 p;void main(){gl_FragColor=vec4(mix(b,t,clamp(normalize(p).y*1.8,0.,1.)),1.);}'}));
 sky.position.copy(CEN);scene.add(sky);
+const stars=(()=>{const a=new Float32Array(900);for(let i=0;i<300;i++){const u=Math.random()*6.283,y=.08+Math.random()*.92,r=Math.sqrt(1-y*y);a.set([Math.cos(u)*r*4600,y*4600,Math.sin(u)*r*4600],i*3)}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));const p=new THREE.Points(g,new THREE.PointsMaterial({color:0xffffff,size:2.2,sizeAttenuation:false,fog:false,depthWrite:false}));p.position.copy(CEN);p.visible=false;scene.add(p);return p})();
 const TIMES={day:{t:0x4a8fd8,b:0xc4dcf0,s:1.1,sc:0xfff2dd,sp:[400,800,300],h:.65,l:0},sun:{t:0x34508c,b:0xf2a672,s:.85,sc:0xffb070,sp:[900,260,100],h:.4,l:0},night:{t:0x050a1a,b:0x141c38,s:.14,sc:0x8899ff,sp:[300,700,200],h:.28,l:1.4}};
 let tmk='day';
 function setTime(k){tmk=k;const o=TIMES[k],rn=$('rn')&&$('rn').checked,gy=new THREE.Color(0x70777f);sky.material.uniforms.t.value.set(o.t);sky.material.uniforms.b.value.set(o.b);if(rn){sky.material.uniforms.t.value.lerp(gy,.6);sky.material.uniforms.b.value.lerp(gy,.6)}scene.fog=new THREE.Fog(sky.material.uniforms.b.value.getHex(),rn?500:1200,rn?2500:5000);if(typeof rain!='undefined')rain.visible=!!rn;
- sun.intensity=o.s*(rn?.55:1);sun.color.set(o.sc);sun.position.set(CEN.x+o.sp[0],o.sp[1],CEN.z+o.sp[2]);hemi.intensity=o.h;lamp.intensity=o.l}
+ sun.intensity=o.s*(rn?.55:1);sun.color.set(o.sc);sun.position.set(CEN.x+o.sp[0],o.sp[1],CEN.z+o.sp[2]);hemi.intensity=o.h;lamp.intensity=o.l;stars.visible=k=='night';const rf=k=='night'?.07:k=='sun'?.3:.38;bodyMat.reflectivity=rf;glassMat.reflectivity=rf+.15;rimMat.reflectivity=rf}
 // cars: instanced body / cabin / lights / wheels
 const CAP=1024,ph=new THREE.MeshPhongMaterial({shininess:70}),dark=new THREE.MeshPhongMaterial({color:0x10151f,shininess:120}),bas=new THREE.MeshBasicMaterial();
-const bodyM=new THREE.InstancedMesh(new THREE.BoxGeometry(14,2.6,7.6),ph,CAP),cabM=new THREE.InstancedMesh(new THREE.BoxGeometry(5,2,5.2),dark,CAP),
+const envT=(()=>{const mk=(...s)=>{const c=document.createElement('canvas');c.width=c.height=32;const g=c.getContext('2d'),gr=g.createLinearGradient(0,0,0,32);s.forEach((q,i)=>gr.addColorStop(q[0],q[1]));g.fillStyle=gr;g.fillRect(0,0,32,32);return c},sd=mk([0,'#5b98dc'],[.5,'#d8e6f2'],[.52,'#59634f'],[1,'#3a4436']),tp=mk([0,'#3f84d4'],[1,'#3f84d4']),bt=mk([0,'#4a5a45'],[1,'#4a5a45']),t=new THREE.CubeTexture([sd,sd,tp,bt,sd,sd]);t.needsUpdate=true;return t})();
+function merge(gs){const P=[],N=[],I=[];let o=0;for(const g of gs){const p=g.attributes.position.array,n=g.attributes.normal.array;P.push(...p);N.push(...n);for(const i of g.index.array)I.push(i+o);o+=p.length/3}const m=new THREE.BufferGeometry();m.setAttribute('position',new THREE.Float32BufferAttribute(P,3));m.setAttribute('normal',new THREE.Float32BufferAttribute(N,3));m.setIndex(I);return m}
+function shp(g,f){const p=g.attributes.position;for(let i=0;i<p.count;i++){const v=[p.getX(i),p.getY(i),p.getZ(i)];f(v);p.setXYZ(i,v[0],v[1],v[2])}g.computeVertexNormals();return g}
+const bodyG=shp(new THREE.BoxGeometry(14,2.6,7.6,10,1,1),v=>{const x=v[0],nx=Math.max(0,(x-4)/3),rx=Math.max(0,(-x-4.6)/2.4);if(v[1]>0)v[1]-=nx*nx*1.5+rx*rx*.5;else v[1]+=nx*.4;v[2]*=1-nx*nx*.22-rx*.1});
+{const p=bodyG.attributes.position,c=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const k=p.getY(i)<-.5?.5:1;c.set([k,k,k],i*3)}bodyG.setAttribute('color',new THREE.BufferAttribute(c,3))}
+const cabG=shp(new THREE.BoxGeometry(5,2,5.2),v=>{if(v[1]>0){v[0]+=v[0]>0?-1.3:.9;v[2]*=.78}});
+const spG=merge([new THREE.BoxGeometry(2,.3,7.6),new THREE.BoxGeometry(.5,1.3,.5).translate(0,-.8,2.6),new THREE.BoxGeometry(.5,1.3,.5).translate(0,-.8,-2.6)]);
+const rimG=merge([0,1,2].map(i=>new THREE.BoxGeometry(2.6,.45,1.95).rotateZ(i*Math.PI/3))),shG=new THREE.PlaneGeometry(17,10).rotateX(-Math.PI/2);
+const bodyMat=new THREE.MeshPhongMaterial({vertexColors:true,shininess:90,specular:0x777777,envMap:envT,reflectivity:.38}),glassMat=new THREE.MeshPhongMaterial({color:0x0a0f18,shininess:160,specular:0xaaaaaa,envMap:envT,reflectivity:.5}),rimMat=new THREE.MeshPhongMaterial({color:0xc9d0da,shininess:110,envMap:envT,reflectivity:.38});
+const shMat=new THREE.MeshBasicMaterial({map:(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d'),r=g.createRadialGradient(32,32,2,32,32,32);r.addColorStop(0,'rgba(0,0,0,.9)');r.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})(),transparent:true,opacity:.6,depthWrite:false});
+const GT=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');for(let i=0;i<64;i++)for(let j=0;j<64;j++){const v=200+Math.random()*55|0;g.fillStyle='rgb('+v+','+v+','+v+')';g.fillRect(i,j,1,1)}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(220,220);return t})();
+const bodyM=new THREE.InstancedMesh(bodyG,bodyMat,CAP),cabM=new THREE.InstancedMesh(cabG,glassMat,CAP),spM=new THREE.InstancedMesh(spG,dark,CAP),shM=new THREE.InstancedMesh(shG,shMat,CAP),rimM=new THREE.InstancedMesh(rimG,rimMat,CAP*4),
  tailM=new THREE.InstancedMesh(new THREE.BoxGeometry(.4,.9,6),bas,CAP),headM=new THREE.InstancedMesh(new THREE.BoxGeometry(.4,.9,6),bas,CAP),
- whM=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.7,1.7,1.7,12).rotateX(Math.PI/2),new THREE.MeshLambertMaterial({color:0x15171c}),CAP*4);
-const CARS=[bodyM,cabM,tailM,headM,whM];for(const m of CARS){m.frustumCulled=false;m.count=0;scene.add(m)}
+ whM=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.7,1.7,1.8,20).rotateX(Math.PI/2),new THREE.MeshLambertMaterial({color:0x15171c}),CAP*4);
+const CARS=[bodyM,cabM,tailM,headM,whM,spM,shM,rimM];for(const m of CARS){m.frustumCulled=false;m.count=0;scene.add(m)}
 bodyM.castShadow=whM.castShadow=true;
 const D=new THREE.Object3D(),M=new THREE.Matrix4(),T=new THREE.Matrix4(),GOLD=new THREE.Color(0xffd24d),RD1=new THREE.Color(1,.08,.08),RD0=new THREE.Color(.4,.02,.02),HL=new THREE.Color(1,.95,.8);
 const put=(m,i,x,y,z,s,r)=>{D.position.set(x,y,z);D.rotation.set(0,s,r);D.updateMatrix();T.multiplyMatrices(M,D.matrix);m.setMatrixAt(i,T)};
@@ -137,7 +190,7 @@ function terrain(){HT=new Float32Array(N);GS=new Float32Array(N);BK=new Float32A
  const sf=+$('sf').value;for(let i=0;i<N;i++)RT[i]=sf<5?sf:[0,0,1,0,3,0][Math.floor(i*6/N)]}
 function setSV(){const wet=$('rn').checked;SV=SU0.map((q,i)=>[q[0]*(wet?WETK[i]:1)*SP.mu*(i&&i!=5?SP.lo:1),q[1]*(wet&&i==0?1.15:1),q[2]])}
 function strip(o0,y0,o1,y1,col,skip,fall){const P=[],K=[],I=[],hk=roadW/2+5,cl=o=>Math.max(-hk,Math.min(hk,o));
- for(let i=0;i<=N;i++){const j=i%N,n=NM[j],a=C[j],c=col(i);P.push(a[0]+n[0]*o0,HT[j]+BK[j]*cl(o0)+y0,a[1]+n[1]*o0,a[0]+n[0]*o1,fall?-.25:HT[j]+BK[j]*cl(o1)+y1,a[1]+n[1]*o1);K.push(...c,...c);
+ for(let i=0;i<=N;i++){const j=i%N,n=NM[j],a=C[j],c=col(i);P.push(a[0]+n[0]*o0,HT[j]+BK[j]*cl(o0)+y0,a[1]+n[1]*o0,a[0]+n[0]*o1,fall?GYv:HT[j]+BK[j]*cl(o1)+y1,a[1]+n[1]*o1);K.push(...c,...c);
   if(i<N&&!(skip&&skip(i))){const b=i*2;I.push(b,b+1,b+2,b+1,b+3,b+2)}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('color',new THREE.Float32BufferAttribute(K,3));g.setIndex(I);g.computeVertexNormals();
  const m=new THREE.Mesh(g,MAT);m.receiveShadow=true;TG.add(m)}
@@ -150,8 +203,8 @@ function rebuild(){
  mx.globalCompositeOperation='destination-out';for(const o of OB){mx.beginPath();mx.arc(o[0],o[1],6,0,7);mx.fill()}mx.globalCompositeOperation='source-over';
  const d=mx.getImageData(0,0,W,H).data;for(let i=0;i<W*H;i++)mask[i]=d[i*4+3]>128?1:0;
  for(const o of[...TG.children]){TG.remove(o);o.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material&&m.material!==MAT&&!m.material.shared)m.material.dispose()})}
- const wet=$('rn').checked,K=(c)=>()=>c,rd=i=>{const b=SC[RT[i%N]],v=(.95+((i>>2)&1)*.06)*(wet?.62:1);return[b[0]*v,b[1]*v,b[2]*v*(wet?1.1:1)]},ln=i=>RT[i%N]!=0;
- const gnd=new THREE.Mesh(new THREE.PlaneGeometry(7000,7000).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:wet?0x244a28:0x2f5a2c}));gnd.position.set(600,-.3,350);gnd.receiveShadow=true;TG.add(gnd);
+ GYv=+$('hl').value?Math.min(...HT)-3:-.3;const wet=$('rn').checked,K=(c)=>()=>c,rd=i=>{const b=SC[RT[i%N]],v=(.95+((i>>2)&1)*.06)*(wet?.62:1);return[b[0]*v,b[1]*v,b[2]*v*(wet?1.1:1)]},ln=i=>RT[i%N]!=0;
+ const gnd=new THREE.Mesh(new THREE.PlaneGeometry(7000,7000).rotateX(-Math.PI/2),new THREE.MeshLambertMaterial({color:wet?0x244a28:0x2f5a2c,map:GT}));gnd.position.set(600,GYv-.05,350);gnd.receiveShadow=true;TG.add(gnd);
  const grass=K(wet?[.14,.27,.15]:[.2,.38,.2]);
  strip(-h,.05,h,.05,rd);strip(h-3,.09,h-1.5,.09,K([.9,.9,.9]),ln);strip(-h+1.5,.09,-h+3,.09,K([.9,.9,.9]),ln);
  strip(-.7,.09,.7,.09,K([.8,.8,.8]),i=>i%3||ln(i));
@@ -170,7 +223,7 @@ function rebuild(){
  let sd=7;const rn=()=>(sd=(sd*16807)%2147483647)/2147483647,pts=[];
  for(let t=0;t<700&&pts.length<160;t++){const x=-350+rn()*1900,z=-350+rn()*1400;let ok=true;for(let i=0;i<N;i+=2)if(Math.hypot(C[i][0]-x,C[i][1]-z)<h+120){ok=false;break}if(ok)pts.push([x,z,.8+rn()*.9])}
  const cone=new THREE.InstancedMesh(new THREE.ConeGeometry(9,28,7).translate(0,22,0),new THREE.MeshLambertMaterial({color:0x1f4a26}),pts.length),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.4,1.8,9,6).translate(0,4.5,0),new THREE.MeshLambertMaterial({color:0x4a3322}),pts.length);
- cone.castShadow=true;pts.forEach((p,i)=>{D.position.set(p[0],0,p[1]);D.rotation.set(0,0,0);D.scale.set(p[2],p[2],p[2]);D.updateMatrix();cone.setMatrixAt(i,D.matrix);tr.setMatrixAt(i,D.matrix)});D.scale.set(1,1,1);TG.add(cone,tr);
+ cone.castShadow=true;pts.forEach((p,i)=>{D.position.set(p[0],GYv,p[1]);D.rotation.set(0,0,0);D.scale.set(p[2],p[2],p[2]);D.updateMatrix();cone.setMatrixAt(i,D.matrix);tr.setMatrixAt(i,D.matrix)});D.scale.set(1,1,1);TG.add(cone,tr);
  if(OB.length){const bm=new THREE.InstancedMesh(new THREE.CylinderGeometry(2.4,2.4,5,12).translate(0,2.5,0),new THREE.MeshLambertMaterial({color:0xe8661a}),OB.length);
   OB.forEach((o,i)=>{D.position.set(o[0],HT[o[2]]+BK[o[2]]*o[3],o[1]);D.rotation.set(0,0,0);D.updateMatrix();bm.setMatrixAt(i,D.matrix)});bm.castShadow=true;TG.add(bm)}
  mkN=0;markM.count=0;setTime(tmk)}
@@ -184,8 +237,8 @@ reset(){const p=C[0],q=C[3],F=()=>new Float32Array(4),g0=HT[0]*UM;this.x=p[0];th
  this.u=2;this.lv=0;this.r=0;this.dl=0;this.gear=1;this.rpm=1000;this.sh=0;this.z=g0+H0-.09;this.vz=0;this.th=0;this.ph=0;this.thd=0;this.phd=0;
  this.om=F().fill(2/RW);this.ra=F();this.gp=F().fill(g0);this.cp=F().fill(.09);this.sl=F();this.mu=F().fill(SV[0][0]);this.pk=F().fill(1);this.rr=F().fill(.012);this.su=new Uint8Array(4);
  this.thr=0;this.brk=0;this.ay=0;this.hit=0;this.off=0;this.lat=0;this.str=0;this.gas=0;
- this.alive=true;this.idx=0;this.prog=0;this.back=0;this.last=0;this.age=0;this.col='hsl('+(Math.random()*360|0)+',85%,52%)';this.tc=null}
-  get fit(){return this.prog}}
+ this.alive=true;this.fin=false;this.lapT=0;this.drift=0;this.drifting=false;this.hb=0;this.idx=0;this.prog=0;this.back=0;this.last=0;this.age=0;this.col='hsl('+(Math.random()*360|0)+',85%,52%)';this.tc=null}
+  get fit(){return(this.fin?N+Math.max(0,3000-this.lapT)*.8:this.prog)+(DR?Math.min(this.drift,240)*.04:0)}}
 function sense(c,ca,sa){const xi=c.x|0,yi=c.y|0,on=xi>=0&&yi>=0&&xi<W&&yi<H&&mask[yi*W+xi]===1;
  for(let i=0;i<8;i++){const dx=ca*CA[i]-sa*SA[i],dy=sa*CA[i]+ca*SA[i];let d=0;
   while(d<RL){d+=RS;const x=(c.x+dx*d)|0,y=(c.y+dy*d)|0,m=x>=0&&y>=0&&x<W&&y<H&&mask[y*W+x]===1;if(on?!m:m)break}
@@ -196,7 +249,7 @@ function imp(c,wv,rox,roy,nx,ny,e,mu){const vx=wv[0]-c.r*roy,vy=wv[1]+c.r*rox,vn
  const m=SP.m,I=SP.iz,rn=rox*ny-roy*nx,j=-(1+e)*vn/(1/m+rn*rn/I);wv[0]+=j*nx/m;wv[1]+=j*ny/m;c.r+=rn*j/I;
  const tx=-ny,ty=nx,vt=vx*tx+vy*ty,rt=rox*ty-roy*tx,jt=Math.max(-mu*j,Math.min(mu*j,-vt/(1/m+rt*rt/I)));wv[0]+=jt*tx/m;wv[1]+=jt*ty/m;c.r+=rt*jt/I;return -vn}
 // one physics sub-step: 4 independent tire contacts, 4-point suspension (heave/pitch/roll), engine+gearbox, walls
-function phys(c,dt,thr,brk,str){
+function phys(c,dt,thr,brk,str,hbk){
  const S=SP,m=S.m,n=NM[c.idx],tx=n[1],ty=-n[0],Cc=C[c.idx],hh=roadW/2,hb=hh+5,hI=HT[c.idx],gs=GS[c.idx],bk=BK[c.idx];
  const dmax=.5/(1+(c.u/17)*(c.u/17)),mx=2.4*dt;c.dl+=Math.max(-mx,Math.min(mx,str*dmax-c.dl));   // speed-sensitive steering, rate-limited rack
  const cs=Math.cos(c.dl),sn=Math.sin(c.dl),ca=Math.cos(c.a),sa=Math.sin(c.a),u=c.u,v=c.lv,r=c.r;
@@ -215,13 +268,13 @@ function phys(c,dt,thr,brk,str){
   let Fs=0;if(comp>0){Fs=KS*comp+CS*cdt;if(comp>.14)Fs+=150000*(comp-.14);if(Fs<0)Fs=0}c.cp[i]=comp;
   const Fz=Fs>0?Fs+dfz:0;
   const wvx=u-r*yi,wvy=v+r*xi;let vl=wvx,vt=wvy;if(fr){vl=wvx*cs+wvy*sn;vt=-wvx*sn+wvy*cs}
-  const om=c.om[i],D=Math.max(Math.abs(vl),2.5),pk=c.pk[i],mu=c.mu[i];
+  const om=c.om[i],D=Math.max(Math.abs(vl),2.5),pk=c.pk[i],mu=c.mu[i]*(fr?1:1-.22*hbk);
   const sx=(om*RW-vl)/D/(.12*pk),sy=vt/Math.max(Math.abs(vl),3)/(.14*pk),sg=Math.hypot(sx,sy)+1e-6;   // combined slip -> friction circle
   const F=mu*Fz*Math.sin(1.5*Math.atan(1.6*sg)),fl=F*sx/sg,ft=-F*sy/sg;c.sl[i]=Fz>0?sg:0;
   const fl2=fl-c.rr[i]*Fz*Math.tanh(vl*2);let bx=fl2,by=ft;if(fr){bx=fl2*cs-ft*sn;by=fl2*sn+ft*cs}
   Fx+=bx;Fy+=by;Mz+=xi*by-yi*bx;
   const dv=dw.indexOf(i)>=0,Iw=dv?2+.12*ratio*ratio:1.5,Ie=Iw+dt*RW*RW*mu*Fz*20/(pk*D);
-  let ot=om+dt*((dv?Tw:0)-RW*fl)/Ie;const Tb=brk*(fr?1300:800)*S.br;
+  let ot=om+dt*((dv?Tw:0)-RW*fl)/Ie;const Tb=brk*(fr?1300:800)*S.br+(fr?0:hbk*2400*S.br);
   if(Tb>0){const dd=dt*Tb/1.6;ot=ot>0?Math.max(0,ot-dd):Math.min(0,ot+dd)}   // brakes can lock the wheel
   c.om[i]=ot;Fv+=Fs;Mp+=xi*Fs;Mr+=yi*Fs;
   if(ad>hh+30)WLL.push(i,d,ox,oy,ad-hh-30)}
@@ -243,16 +296,16 @@ function obst(c){if(!OB.length)return;const ca=Math.cos(c.a),sa=Math.sin(c.a);le
   if(d<5.7&&d>1e-3){if(!wv)wv=[c.u*ca-c.lv*sa,c.u*sa+c.lv*ca];const v2=imp(c,wv,rx,ry,px/d,py/d,.3,.2);if(v2>c.hit)c.hit=v2;c.x+=px/d*(5.7-d)*.5;c.y+=py/d*(5.7-d)*.5}}
  if(wv){c.u=wv[0]*ca+wv[1]*sa;c.lv=-wv[0]*sa+wv[1]*ca}}
 function stepCar(c){sense(c,Math.cos(c.a),Math.sin(c.a));
- c.inp[8]=Math.min(1.2,Math.max(0,c.u)/40);c.inp[9]=Math.max(-1,Math.min(1,Math.atan2(c.lv,Math.abs(c.u)+.5)/.6));c.inp[10]=Math.min(1,(c.mu[0]+c.mu[1]+c.mu[2]+c.mu[3])/4.8);
- fwd(c.w,c.act);const o=c.act[4],thr=Math.max(0,o[1]),brk=Math.max(0,-o[1]);c.str=o[0];c.gas=o[1];c.thr=thr;c.brk=brk;
+ c.inp[8]=Math.min(1.2,Math.max(0,c.u)/40);c.inp[9]=Math.max(-1,Math.min(1,Math.atan2(c.lv,Math.abs(c.u)+.5)/.6));c.inp[10]=Math.min(1,(c.mu[0]+c.mu[1]+c.mu[2]+c.mu[3])/4.8);{const q=c.idx,a0=C[q],a1=C[(q+3)%N],b0=C[(q+20)%N],b1=C[(q+23)%N],ux=a1[0]-a0[0],uy=a1[1]-a0[1],vx=b1[0]-b0[0],vy=b1[1]-b0[1];c.inp[11]=Math.max(-1,Math.min(1,Math.atan2(ux*vy-uy*vx,ux*vx+uy*vy)))}
+ fwd(c.w,c.act);const o=c.act[4],thr=Math.max(0,o[1]),brk=Math.max(0,-o[1]),hb=Math.max(0,o[2]-.15)/.85;c.hb=hb;c.str=o[0];c.gas=o[1];c.thr=thr;c.brk=brk;
  if(c.sh<=0){if(c.rpm>6400&&c.gear<6){c.gear++;c.sh=.18}else if(c.rpm<2300&&c.gear>1){c.gear--;c.sh=.1}}
- const dt=1/(60*PQ);for(let k=0;k<PQ;k++)phys(c,dt,thr,brk,o[0]);obst(c);
- for(let i=0;i<4;i++)c.ra[i]+=c.om[i]/60;c.age++;
+ const dt=1/(60*PQ);for(let k=0;k<PQ;k++)phys(c,dt,thr,brk,o[0],hb);obst(c);
+ for(let i=0;i<4;i++)c.ra[i]+=c.om[i]/60;c.age++;c.drifting=c.u>8&&Math.abs(Math.atan2(c.lv,Math.abs(c.u)+.5))>.2;if(c.drifting)c.drift++;
  if(!isFinite(c.x+c.y+c.u+c.lv+c.z)){c.alive=false;return}
  let bj=c.idx,bd=1e9;for(let k=-3;k<=10;k++){const j=(c.idx+k+N)%N,dx=C[j][0]-c.x,dy=C[j][1]-c.y,d=dx*dx+dy*dy;if(d<bd){bd=d;bj=j}}
  let dl=bj-c.idx;if(dl>N/2)dl-=N;if(dl<-N/2)dl+=N;
  const nb=NM[bj],lat=Math.abs((c.x-C[bj][0])*nb[0]+(c.y-C[bj][1])*nb[1]),hr=roadW/2+5;c.lat=lat;
- if(dl>0){if(lat<hr){c.prog+=dl;c.last=c.age;c.back=Math.max(0,c.back-dl)}}   // progress only counts on asphalt/kerb: no shortcuts over grass
+ if(dl>0){if(lat<hr){c.prog+=dl;c.last=c.age;c.back=Math.max(0,c.back-dl);if(!c.fin&&c.prog>=N){c.fin=true;c.lapT=c.age;if(!winner){winner=c;winT=gAge}}}}   // progress only counts on asphalt/kerb: no shortcuts over grass
  else if(dl<0){c.back-=dl;if(c.back>12)c.alive=false}
  c.off=lat>hr?c.off+1:0;if(c.off>180||c.hit>7)c.alive=false;   // 3 s off the kerb, or a hard wall/obstacle impact, ends the run
  c.idx=bj;if(c.age-c.last>240)c.alive=false}
@@ -265,10 +318,10 @@ function pairHit(a,b){if(Math.abs(a.x-b.x)>14||Math.abs(a.y-b.y)>14)return;const
   const ra=ax*ny-ay*nx,rb=bx*ny-by*nx,j=-(1.15)*vn/(2/m+ra*ra/I+rb*rb/I),wa=[a.u*ca-a.lv*sa+j*nx/m,a.u*sa+a.lv*ca+j*ny/m],wb=[b.u*cb-b.lv*sb-j*nx/m,b.u*sb+b.lv*cb-j*ny/m];
   a.r+=ra*j/I;b.r-=rb*j/I;a.u=wa[0]*ca+wa[1]*sa;a.lv=-wa[0]*sa+wa[1]*ca;b.u=wb[0]*cb+wb[1]*sb;b.lv=-wb[0]*sb+wb[1]*cb;if(-vn>a.hit)a.hit=-vn;if(-vn>b.hit)b.hit=-vn}}
 // ---------- evolution (unchanged) ----------
-function newGen(ws,inc=true){pop=ws.map(w=>new Car(w));sel=null;$('nx').textContent='Car: Leader';if(inc)gen++;gAge=0}
+function newGen(ws,inc=true){pop=ws.map(w=>new Car(w));sel=null;winner=null;$('nx').textContent='Car: Leader';if(inc)gen++;gAge=0}
 function evolve(){pop.sort((a,b)=>b.fit-a.fit);const b=pop[0];let sum=0;for(const c of pop)sum+=c.fit;
- histB.push(b.fit);histA.push(Math.round(sum/pop.length));if(histB.length>600){histB.shift();histA.shift()}
- samples.push({g:gen,s:b.fit,w:b.w.slice()});if(samples.length>150)samples.splice(1,1);
+ histB.push(b.fit);histA.push(Math.round(sum/pop.length));if(histB.length>600){histB.shift();histA.shift()}if(b.fin&&(!recT||b.lapT<recT))recT=b.lapT;histL.push(b.fin?b.lapT/60:null);if(histL.length>600)histL.shift();
+ samples.push({g:gen,s:b.fit,t:b.fin?b.lapT:0,w:b.w.slice()});if(samples.length>150)samples.splice(1,1);
  if(b.fit>rec){rec=b.fit;bestW=b.w.slice();stag=0}else stag++;
  mr=Math.min(.15,.03+stag*.008);const n=popN,ws=[];if(bestW)ws.push(bestW.slice());
  const el=Math.max(1,n*.03|0);for(let i=0;i<el&&ws.length<n&&i<pop.length;i++)ws.push(pop[i].w.slice());
@@ -278,23 +331,23 @@ function evolve(){pop.sort((a,b)=>b.fit-a.fit);const b=pop[0];let sum=0;for(cons
   for(const[s,n]of NEUR)w.set((Math.random()<.5?A:B).subarray(s,s+n),s);mutate(w,mr,1.2);
   ws.push(w)}
  newGen(ws);fillSel();save()}
-function resetAll(){gen=0;rec=0;bestW=null;histB=[];histA=[];samples=[];stag=0;mr=.03;test=false;newGen(Array.from({length:popN},rw));fillSel()}
+function resetAll(){histL=[];recT=0;gen=0;rec=0;bestW=null;histB=[];histA=[];samples=[];stag=0;mr=.03;test=false;newGen(Array.from({length:popN},rw));fillSel()}
 function addCars(k){for(let i=0;i<k;i++){let w;if(bestW){w=bestW.slice();mutate(w,.15,1.2)}pop.push(new Car(w))}popN=Math.min(1000,popN+k);$('np').value=Math.min(500,popN);$('npv').textContent=popN}
 function tick(){let al=0;for(const c of pop)if(c.alive){stepCar(c);if(c.alive)al++}if($('cc').checked)collide();gAge++;
- if(al==0||gAge>3000){if(test){const r=pop.map(c=>c.label+': '+(c.prog/N).toFixed(2)+' laps').join(' · ');$('res').textContent='Result — '+r;msg('Result — '+r);test=false;newGen(saved,false)}else evolve()}}
-function runTest(list){if(test)return;saved=pop.map(c=>c.w);pop=list.map(o=>{const c=new Car(o.w.slice());c.col=o.col;c.label=o.label;return c});sel=null;gAge=0;test=true;setRun(true)}
+ if(al==0||gAge>3000||(winner&&gAge-winT>240)){if(test){const r=pop.map(c=>c.label+': '+(c.fin?(c.lapT/60).toFixed(2)+'s lap':(c.prog/N*100|0)+'%')).join(' · ');$('res').textContent='Result — '+r;msg('Result — '+r);test=false;newGen(saved,false)}else evolve()}}
+function runTest(list){if(test)return;saved=pop.map(c=>c.w);pop=list.map(o=>{const c=new Car(o.w.slice());c.col=o.col;c.label=o.label;return c});sel=null;winner=null;gAge=0;test=true;setRun(true)}
 // ---------- save (same racerLab3 v3 format: old saves load as-is) ----------
 const DB=new Promise((res,rej)=>{try{const r=indexedDB.open('racerLab3',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});DB.catch(()=>{});
 const idb=(m,f)=>DB.then(d=>new Promise((res,rej)=>{const t=d.transaction('kv',m),q=f(t.objectStore('kv'));t.oncomplete=()=>res(q.result);t.onerror=()=>rej(t.error)}));
 function save(force){if(test||!pop.length)return;const t=Date.now();if(!force&&t-lastSave<4000)return;lastSave=t;
- idb('readwrite',s=>s.put({v:4,nw:NW,cfg:cfg(),C:C.map(p=>[Math.round(p[0]),Math.round(p[1])]),roadW,popN,gen,rec,bestW,hb:histB,ha:histA,smp:samples,pop:pop.slice(0,150).map(c=>c.w)},'state')).then(()=>{$('svd').textContent='Saved in this browser ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}).catch(()=>{$('svd').textContent='Autosave is blocked in this browser'})}
+ idb('readwrite',s=>s.put({v:5,nw:NW,cfg:cfg(),C:C.map(p=>[Math.round(p[0]),Math.round(p[1])]),roadW,popN,gen,rec,bestW,hb:histB,ha:histA,hl:histL,recT,smp:samples,pop:pop.slice(0,150).map(c=>c.w)},'state')).then(()=>{$('svd').textContent='Saved in this browser ✓ '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}).catch(()=>{$('svd').textContent='Autosave is blocked in this browser'})}
 const cfg=()=>({sf:$('sf').value,hl:$('hl').value,vh:$('vh').value,pq:$('pq').value,rn:$('rn').checked,cc:$('cc').checked,ob:$('ob').checked});
-async function load(){try{const s=await idb('readonly',o=>o.get('state'));const old=s&&s.v==3&&s.nw==NW0;
- if(!s||!(old||(s.v==4&&s.nw==NW))||!s.pop||!s.pop.length||!s.C||s.C.length<12)return false;
+async function load(){try{const s=await idb('readonly',o=>o.get('state'));const old=s&&s.nw!=NW;
+ if(!s||!(old?(s.nw==NW0||s.nw==NW1):s.nw==NW)||!s.pop||!s.pop.length||!s.C||s.C.length<12)return false;
  if(old)idb('readwrite',st=>st.put(s,'state_v3_backup')).catch(()=>{});   // untouched copy of the old save, kept before migrating
  const M2=w=>old?mig(w):w;
  if(s.cfg){$('sf').value=s.cfg.sf;$('hl').value=s.cfg.hl;$('vh').value=s.cfg.vh;$('pq').value=s.cfg.pq;PQ=+s.cfg.pq;$('rn').checked=!!s.cfg.rn;$('cc').checked=!!s.cfg.cc;$('ob').checked=!!s.cfg.ob}
- C=s.C;N=C.length;roadW=s.roadW;popN=s.popN;gen=s.gen;rec=s.rec;bestW=s.bestW?M2(s.bestW):null;histB=s.hb||[];histA=s.ha||[];samples=(s.smp||[]).map(o=>({g:o.g,s:o.s,w:M2(o.w)}));rebuild();
+ C=s.C;N=C.length;roadW=s.roadW;popN=s.popN;gen=s.gen;rec=s.rec;bestW=s.bestW?M2(s.bestW):null;histB=s.hb||[];histA=s.ha||[];histL=s.hl||[];recT=s.recT||0;samples=(s.smp||[]).map(o=>({g:o.g,s:o.s,t:o.t||0,w:M2(o.w)}));rebuild();
  const src=s.pop.map(M2),ws=src.slice(0,popN);while(ws.length<popN){const w=ws[Math.random()*src.length|0].slice();mutate(w,.05,1.2);ws.push(w)}
  newGen(ws,false);$('rw').value=roadW;$('np').value=Math.min(500,popN);$('npv').textContent=popN;return true}catch(e){return false}}
 addEventListener('pagehide',()=>save(true));document.addEventListener('visibilitychange',()=>{if(document.hidden)save(true)});
@@ -328,13 +381,14 @@ function render(){
  leader=best;focus=sel&&sel.alive?sel:best;const wl=al<=150&&level>0;let k=0,wk=0,nm=0;
  for(const c of pop){if(!c.alive||k>=CAP)continue;
   D2.position.set(c.x,(c.z-.41)*MU,c.y);D2.rotation.set(-c.ph,-c.a,c.th);D2.updateMatrix();M.copy(D2.matrix);
-  put(bodyM,k,0,2.6,0,0,0);put(cabM,k,-1,4.5,0,0,0);put(tailM,k,-7.1,2.8,0,0,0);put(headM,k,7.1,2.8,0,0,0);
+  put(bodyM,k,0,2.6,0,0,0);put(cabM,k,-1,4.5,0,0,0);put(tailM,k,-7.1,2.8,0,0,0);put(headM,k,7.1,2.8,0,0,0);put(spM,k,-6.3,4.4,0,0,0);
+  {const gy=(c.gp[0]+c.gp[1]+c.gp[2]+c.gp[3])*.25*MU+.3;D.position.set(c.x,gy,c.y);D.rotation.set(0,-c.a,0);D.updateMatrix();shM.setMatrixAt(k,D.matrix)}
   bodyM.setColorAt(k,c===best?GOLD:(c.tc||(c.tc=new THREE.Color(c.col))));tailM.setColorAt(k,c.brk>.1?RD1:RD0);headM.setColorAt(k,HL);
-  if(wl){const s=-c.dl,ye=1.7+1.5*MU*0;for(let i=0;i<4;i++)put(whM,wk++,i<2?4.3:-4.3,1.7+(c.cp[i]-.1)*MU*1.5,i&1?-4.4:4.4,i<2?s:0,c.ra[i])}
+  if(wl){const s=-c.dl,ye=1.7+1.5*MU*0;for(let i=0;i<4;i++){const wx=i<2?4.3:-4.3,wy=1.7+(c.cp[i]-.1)*MU*1.5,wz=i&1?-4.4:4.4;put(rimM,wk,wx,wy,wz,i<2?s:0,c.ra[i]);put(whM,wk++,wx,wy,wz,i<2?s:0,c.ra[i])}}
   if(run&&nm<24&&mkN>=0)for(let i=2;i<4;i++)if(c.sl[i]>1.6&&c.cp[i]>0){const ca=Math.cos(c.a),sa=Math.sin(c.a),xi=XW[i],yi=YW[i];D.position.set(c.x+(ca*xi-sa*yi)*MU,c.gp[i]*MU+.2,c.y+(sa*xi+ca*yi)*MU);D.rotation.set(0,-c.a,0);D.updateMatrix();markM.setMatrixAt(mkI,D.matrix);mkI=(mkI+1)%MAXM;mkN=Math.min(MAXM,mkN+1);nm++}
   k++}
  if(nm){markM.count=mkN;markM.instanceMatrix.needsUpdate=true}
- bodyM.count=cabM.count=tailM.count=headM.count=k;whM.count=wk;
+ bodyM.count=cabM.count=tailM.count=headM.count=spM.count=shM.count=k;whM.count=rimM.count=wk;
  for(const m of CARS){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true}
  const f=focus;rays.visible=!!f&&showRays&&!dm;
  if(rays.visible){const p=rayG.attributes.position.array,c=rayC.array,y=(f.z-.41)*MU+2;for(let i=0;i<8;i++){const a=f.a+ANG[i],d=Math.abs(f.inp[i])*RL,hit=Math.abs(f.inp[i])<.99,off=f.inp[i]<0;
@@ -344,7 +398,7 @@ function render(){
  if(rain.visible){const a=rainG.attributes.position.array;for(let i=0;i<RN;i++){const o=i*6;let y=a[o+1]-3;if(y<0)y+=180;a[o+1]=y;a[o+4]=y+5}rainG.attributes.position.needsUpdate=true;rain.position.set(cp.x,0,cp.z)}
  pre.visible=dm;if(dm){const p=preG.attributes.position.array,n=Math.min(raw.length,2000);for(let i=0;i<n;i++)p.set([raw[i][0],1,raw[i][1]],i*3);preG.setDrawRange(0,n);preG.attributes.position.needsUpdate=true}
  R.render(scene,cam)}
-const LB=['S1','S2','S3','S4','S5','S6','S7','S8','Spd','Slip','Grip'];
+const LB=['S1','S2','S3','S4','S5','S6','S7','S8','Spd','Slip','Grip','Turn'];
 function drawNet(c){const g=nn,w=360,h=400;g.fillStyle='#0a1020';g.fillRect(0,0,w,h);if(!c)return;
  const X=[48,118,190,258,312],gp=(h-24)/47,K=[4,1,1,1,14],A=c.act,wt=c.w,Y=(l,i)=>h/2+(i-(SZ[l]-1)/2)*gp*K[l];g.lineCap='round';
  const LW=[.7,1.1,1.8],AL=[.3,.55,.9];
@@ -352,22 +406,33 @@ function drawNet(c){const g=nn,w=360,h=400;g.fillStyle='#0a1020';g.fillRect(0,0,
   for(let j=0;j<SZ[l+1];j++)for(let i=0;i<m;i++){const v=wt[BASE[l+1]+j*(m+1)+1+i]*A[l][i],a=Math.abs(v);if(a>th){const b=a>th*4?2:a>th*2?1:0,p=(v>0?P:Q)[b];p.moveTo(X[l],Y(l,i));p.lineTo(X[l+1],Y(l+1,j))}}
   for(let b=0;b<3;b++){g.lineWidth=LW[b];g.strokeStyle='rgba(61,255,160,'+AL[b]+')';g.stroke(P[b]);g.strokeStyle='rgba(255,77,109,'+AL[b]+')';g.stroke(Q[b])}}
  for(let l=0;l<5;l++){const r=l==0||l==4?6:2.8;for(let i=0;i<SZ[l];i++){const v=A[l][i],m=Math.min(1,Math.abs(v));g.fillStyle=l==0?'rgba(53,224,255,'+(.25+m*.75)+')':v>0?'rgba(61,255,160,'+(.3+m*.7)+')':'rgba(255,77,109,'+(.3+m*.7)+')';g.beginPath();g.arc(X[l],Y(l,i),r,0,7);g.fill();g.lineWidth=.8;g.strokeStyle='rgba(255,255,255,.35)';g.stroke()}}
- g.fillStyle='#a9b6d6';g.font='11px system-ui';g.fillText('Steer',X[4]+11,Y(4,0)+4);g.fillText('Gas/Brake',X[4]+11,Y(4,1)+4);
+ g.fillStyle='#a9b6d6';g.font='11px system-ui';g.fillText('Steer',X[4]+11,Y(4,0)+4);g.fillText('Gas/Brake',X[4]+11,Y(4,1)+4);g.fillText('Drift',X[4]+11,Y(4,2)+4);
  for(let i=0;i<SZ[0];i++)g.fillText(LB[i],X[0]-36,Y(0,i)+4)}
 function line(g,d,m,w,h,col){if(d.length<2)return;g.beginPath();d.forEach((v,i)=>{const x=6+i*(w-12)/(d.length-1),y=h-8-(v/m)*(h-18);i?g.lineTo(x,y):g.moveTo(x,y)});g.strokeStyle=col;g.lineWidth=2;g.stroke()}
-function drawChart(){const g=ch,w=360,h=110;g.fillStyle='#0a1020';g.fillRect(0,0,w,h);const b=histB.slice(-80),a=histA.slice(-80),m=Math.max(...b,1);line(g,a,m,w,h,'#8b5cff');line(g,b,m,w,h,'#35e0ff')}
-function stats(){let al=0,b=0,s=0,f=0;for(const c of pop){if(c.alive)al++;if(c.fit>b)b=c.fit;s+=c.fit;if(c.prog>=N)f++}const n=Math.max(1,pop.length);
- $('sg').textContent=gen;$('sa').textContent=al;$('sb').textContent=b;$('sv').textContent=Math.round(s/n);$('sr').textContent=rec;$('sl').textContent=(b/Math.max(N,1)).toFixed(1);
- $('sf').textContent=Math.round(f/n*100)+'%';$('sm').textContent=Math.round(mr*100)+'%';$('sn').textContent=pop.length}
-function tele(){const f=focus;$('tel').textContent=f?'Car '+(f===leader?'(leader)':'(selected)')+'\n'+SP.n+' · '+(f.u*3.6).toFixed(0)+' km/h · gear '+f.gear+' · '+(f.rpm|0)+' rpm\nThrottle '+(f.thr*100|0)+'%  Brake '+(f.brk*100|0)+'%  Steer '+(f.dl*57.3).toFixed(1)+'°\nLateral '+(f.ay/G).toFixed(2)+' g · sideslip '+(Math.atan2(f.lv,Math.abs(f.u)+.5)*57.3).toFixed(0)+'°\nTyres on '+SN[f.su[2]]+' · grip '+f.mu[2].toFixed(2)+' · peak wheel slip '+Math.max(...f.sl).toFixed(1)+'\nLaps '+(f.prog/Math.max(N,1)).toFixed(2)+' · closest edge '+(Math.min(...Array.from(f.inp).slice(0,8).map(Math.abs))*RL).toFixed(0)+' · Gen '+gen+' · '+Math.round(gAge/60)+'s':''}
-function fillSel(){const s=$('gs'),v=Math.max(0,s.selectedIndex);s.innerHTML=samples.map((o,i)=>'<option value="'+i+'">Gen '+o.g+' · '+(o.s/Math.max(N,1)).toFixed(1)+' laps</option>').join('');s.selectedIndex=Math.min(v,samples.length-1)}
+function drawChart(){const g=ch,w=360,h=110;g.fillStyle='#0a1020';g.fillRect(0,0,w,h);const b=histB.slice(-80),a=histA.slice(-80),m=Math.max(...b,1);line(g,a,m,w,h,'#8b5cff');line(g,b,m,w,h,'#35e0ff');
+ const g2=lap2;g2.fillStyle='#0a1020';g2.fillRect(0,0,w,h);const L=histL.slice(-80),vs=L.filter(v=>v!=null);g2.fillStyle='#7f8fb2';g2.font='11px system-ui';
+ if(vs.length>1){const mn=Math.min(...vs),mx=Math.max(...vs,mn+.5);g2.beginPath();let st=0;L.forEach((v,i)=>{if(v==null)return;const x=6+i*(w-12)/Math.max(1,L.length-1),y=h-10-(mx-v)/(mx-mn)*(h-30);st?g2.lineTo(x,y):g2.moveTo(x,y);st=1});g2.strokeStyle='#3dffa0';g2.lineWidth=2;g2.stroke();g2.fillText('fastest '+mn.toFixed(2)+'s',8,14)}
+ else g2.fillText('Lap times appear once a car finishes a lap',8,h/2)}
+function stats(){let al=0,s=0,f=0,dr=0,bl=0,bp=0;for(const c of pop){if(c.alive){al++;if(c.drifting)dr++}const p=Math.min(c.prog,N)/N;s+=p;if(p>bp)bp=p;if(c.fin){f++;if(!bl||c.lapT<bl)bl=c.lapT}}
+ const n=Math.max(1,pop.length),T=v=>v?(v/60).toFixed(2)+'s':'—',set=(i,v)=>$(i).textContent=v;
+ set('sg',gen);set('sa',al+'/'+pop.length);set('sm',Math.round(mr*100)+'%');set('sbl',T(bl));set('srl',T(recT));set('sfin',Math.round(f/n*100)+'%');set('sprog',Math.round(bp*100)+'%');set('savg',Math.round(s/n*100)+'%');set('sdr',dr);
+ set('tg',gen);set('ta',al);set('tb',T(bl));set('tr',T(recT));
+ const top=pop.slice().sort((a,b)=>b.fit-a.fit).slice(0,5);
+ $('lb').innerHTML=top.map((c,i)=>'<div class="lr"><b>'+(i+1)+'</b><i style="background:'+c.col+'"></i><span>'+(c.fin?'🏁 '+(c.lapT/60).toFixed(2)+'s':Math.round(Math.min(c.prog,N)/N*100)+'%'+(c.alive?'':' ✕'))+'</span><em>'+(c.alive?(Math.abs(c.u)*3.6|0)+' km/h':'out')+(c.drifting?' · drift':'')+'</em></div>').join('')}
+function tele(){const f=focus;$('clock').textContent='Gen '+gen+' · '+(gAge/60).toFixed(1)+'s'+(winner?'  🏁 '+(winner.lapT/60).toFixed(2)+'s':'');
+ if(!f){$('hv').textContent='0';return}
+ const sl=Math.atan2(f.lv,Math.abs(f.u)+.5)*57.3;
+ $('hv').textContent=Math.abs(f.u*3.6)|0;$('hg').textContent='G'+f.gear;
+ $('bt').style.width=f.thr*100+'%';$('bb').style.width=f.brk*100+'%';$('bd').style.width=Math.min(100,Math.abs(sl)/45*100)+'%';
+ $('hx').textContent=(f===leader?'Leader':'Selected')+' · '+SP.n+'\n'+(f.rpm|0)+' rpm · steer '+(f.dl*57.3).toFixed(0)+'°\nhandbrake '+(f.hb*100|0)+'%\n'+(f.ay/G).toFixed(2)+' g · slip '+sl.toFixed(0)+'°\n'+SN[f.su[2]]+' · grip '+f.mu[2].toFixed(2)+'\nlap '+(Math.min(f.prog,N)/N*100|0)+'%'}
+function fillSel(){const s=$('gs'),v=Math.max(0,s.selectedIndex);s.innerHTML=samples.map((o,i)=>'<option value="'+i+'">Gen '+o.g+' · '+(o.t?(o.t/60).toFixed(2)+'s':(o.s/Math.max(N,1)*100|0)+'%')+'</option>').join('');s.selectedIndex=Math.min(v,samples.length-1)}
 // ---------- loop: fixed 60 Hz simulation step, independent of render FPS ----------
 let last=performance.now(),acc=0;
 function loop(now){requestAnimationFrame(loop);const dt=Math.min(.1,(now-last)/1000);last=now;
  if(run&&!dm){acc+=dt*60*speed;const t0=performance.now();while(acc>=1){tick();acc--;if(performance.now()-t0>12){acc=Math.min(acc,1);break}}}
  camUpdate(dm);render();
  ema+=(dt*1000-ema)*.05;if(auto&&++lvT%90==0){if(ema>26&&level>0)setQ(level-1);else if(ema<15&&level<2&&lvT%360==0)setQ(level+1)}
- if(++fr%4==0){drawNet(focus);if(fr%16==0){drawChart();stats();tele()}}}
+ if(++fr%4==0){drawNet(focus);tele();if(fr%16==0){drawChart();stats()}}}
 // ---------- UI ----------
 function setRun(v){run=v;$('go').textContent=v?'⏸ Pause':'▶ Start'}
 $('go').onclick=()=>{if(dm)return;setRun(!run);msg(run?'Training… every crash teaches the next generation.':'Paused.')};
@@ -384,7 +449,7 @@ let rsT=0;$('rs').onclick=()=>{if(!rsT){$('rs').textContent='Tap again: erase al
  clearTimeout(rsT);rsT=0;$('rs').textContent='Reset (zero)';idb('readwrite',s=>s.clear()).catch(()=>{});resetAll();setRun(false);msg('Everything erased. All brains are random again.')};
 $('rw').onchange=e=>{const w=+e.target.value;if(!valid(C,w)){e.target.value=roadW;msg('This track is too tight for that road width.');return}
  roadW=w;rebuild();if(!test)newGen(pop.map(c=>c.w),false);save(true)};
-function newTrack(m){histB=[];histA=[];samples=[];rec=0;stag=0;fillSel();if(!test)newGen(pop.map(c=>c.w),false);save(true);msg(m)}
+function newTrack(m){histL=[];recT=0;histB=[];histA=[];samples=[];rec=0;stag=0;fillSel();if(!test)newGen(pop.map(c=>c.w),false);save(true);msg(m)}
 $('df').onclick=()=>{dm=false;$('dr').classList.remove('on');setTrack(makeC(defTrack()));newTrack('Medium default track loaded.')};
 $('dr').onclick=()=>{dm=!dm;$('dr').classList.toggle('on',dm);raw=[];if(dm){setRun(false);msg('Draw one closed loop with finger or mouse. Cars drive the way you draw.')}else msg('Draw mode off.')};
 const ray=new THREE.Raycaster(),pl=new THREE.Plane(new THREE.Vector3(0,1,0),0),v3=new THREE.Vector3();
@@ -407,13 +472,24 @@ $('cmp').onclick=()=>{const i=$('gs').selectedIndex;if(i<0||!samples.length){msg
  const o=samples[i],n=samples[samples.length-1],l=[{w:o.w,label:'Gen '+o.g,col:'#ffb347'}];if(n!==o)l.push({w:n.w,label:'Gen '+n.g+' (newest)',col:'#3dffa0'});
  runTest(l);msg('Racing: orange = old generation, green = newest.')};
 const envChange=m=>{if(rsT2)return;rebuild();newTrack(m)};let rsT2=0;
-for(const id of['vh','sf','hl'])$(id).onchange=()=>envChange('Physics environment changed: '+SPECS[+$('vh').value].n+', road '+$('sf').selectedOptions[0].text.slice(6)+', '+$('hl').selectedOptions[0].text.slice(9)+'. Brains kept, records restarted.');
+for(const id of['vh','sf','hl'])$(id).onchange=()=>envChange('Physics environment changed: '+SPECS[+$('vh').value].n+', road '+$('sf').selectedOptions[0].text.toLowerCase()+', '+$('hl').selectedOptions[0].text.toLowerCase()+'. Brains kept, records restarted.');
 $('rn').onchange=e=>envChange(e.target.checked?'Rain on: wet roads reduce grip and lengthen braking distances.':'Rain off.');
 $('ob').onchange=e=>envChange(e.target.checked?'Obstacles on: barrels block the road and are visible to the sensors.':'Obstacles off.');
 $('pq').onchange=e=>{PQ=+e.target.value;msg('Physics: '+PQ+' sub-step(s) per 60 Hz tick.')};
-$('cc').onchange=e=>msg(e.target.checked?'Car-to-car collisions on (all cars still start from the same spot).':'Car-to-car collisions off.');
+$('dfr').onchange=e=>{DR=e.target.checked;msg(DR?'Drift reward on: controlled slides earn a small bonus.':'Drift reward off: only lap time and distance count.')};$('cc').onchange=e=>msg(e.target.checked?'Car-to-car collisions on (all cars still start from the same spot).':'Car-to-car collisions off.');
 const _rnd=Math.random;function mul(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 $('rp').onchange=e=>{Math.random=e.target.checked?mul(12345):_rnd;msg(e.target.checked?'Fixed seed: random numbers now repeat. Press Reset for a reproducible run.':'Random seed released.')};
 try{localStorage.removeItem('racerLab2')}catch(e){}
 ;(async()=>{setTime('day');setQ(1);SP=SPECS[0];setSV();if(await load())msg('Welcome back! Training continues from generation '+gen+'. Press Start.');else{setTrack(makeC(defTrack()));resetAll()}fillSel();camUpdate(true);requestAnimationFrame(loop)})();
+</script><script>
+const camB=[...document.querySelectorAll('#seg button')];
+camB.forEach(b=>b.onclick=()=>{$('cm').value=b.dataset.v;$('cm').dispatchEvent(new Event('change'))});
+setInterval(()=>{camB.forEach(b=>b.classList.toggle('on',b.dataset.v==$('cm').value));$('rwv').textContent=$('rw').value},250);
+const bs=$('bs'),bi=$('bi'),PS=$('setup'),PI=$('info');
+function show(p,b){p.classList.remove('shut','out');void p.offsetWidth;p.classList.add('in');b.classList.add('on')}
+function hide(p,b){if(p.classList.contains('shut')||p.classList.contains('out'))return;p.classList.remove('in');p.classList.add('out');b.classList.remove('on');setTimeout(()=>{if(p.classList.contains('out')){p.classList.add('shut');p.classList.remove('out')}},200)}
+function tg(p,o,b,ob){if(p.classList.contains('shut')||p.classList.contains('out')){show(p,b);if(innerWidth<900)hide(o,ob)}else hide(p,b)}
+bs.onclick=()=>tg(PS,PI,bs,bi);bi.onclick=()=>tg(PI,PS,bi,bs);
+if(innerWidth<900){PS.classList.add('shut');PI.classList.add('shut');bs.classList.remove('on');bi.classList.remove('on')}
+addEventListener('keydown',e=>{const t=e.target.tagName;if(t=='SELECT'||t=='INPUT')return;if(e.code=='Space'){e.preventDefault();$('go').click()}});
 </script></body></html>
